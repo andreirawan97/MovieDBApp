@@ -8,3 +8,12 @@ export async function requestNowPlaying() {
 
   return result;
 }
+
+export async function requestMovieDetail(movieID: number) {
+  let url = `https://api.themoviedb.org/3/movie/${movieID}?api_key=${API_KEY}&language=en-US`;
+
+  let response = await fetch(url);
+  let result = await response.json();
+
+  return result;
+}

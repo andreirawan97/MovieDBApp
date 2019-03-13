@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 4805,
   "expoServerNgrokUrl": "https://tn-yj2.anonymous.moviedbapp.exp.direct",
   "packagerNgrokUrl": "https://packager.tn-yj2.anonymous.moviedbapp.exp.direct",
-  "ngrokPid": 19242
+  "ngrokPid": 4821
 }

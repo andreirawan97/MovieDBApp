@@ -26,7 +26,8 @@ class HomeScreen extends Component<Props> {
   };
 
   componentDidMount() {
-    this.props.fetchNowPlaying();
+    let {fetchNowPlaying} = this.props;
+    fetchNowPlaying();
   }
 
   render() {
@@ -53,7 +54,7 @@ class HomeScreen extends Component<Props> {
                   onPress={() =>
                     navigation.navigate('Detail', {
                       id: movie.id,
-                      backdropPath: movie.backdropPath,
+                      title: movie.title,
                     })
                   }
                 />

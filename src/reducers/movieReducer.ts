@@ -3,6 +3,14 @@ import {MovieState, Action} from '../Type';
 export default function newsReducer(movieState: MovieState, action: Action) {
   const initialState: MovieState = {
     nowPlayingMovies: [],
+    movieDetail: {
+      id: 0,
+      title: '',
+      posterPath: '',
+      backdropPath: '',
+      overview: '',
+      releaseDate: '',
+    },
   };
 
   if (!movieState) {
@@ -16,6 +24,29 @@ export default function newsReducer(movieState: MovieState, action: Action) {
       return {
         ...movieState,
         nowPlayingMovies: nowPlayingMovies,
+      };
+    }
+    case 'FETCH_MOVIE_DETAIL_SUCCESS': {
+      let movieDetail = action.payload;
+
+      return {
+        ...movieState,
+        movieDetail: movieDetail,
+      };
+    }
+    case 'RESET_MOVIE_DETAIL': {
+      let movieDetail = {
+        id: 0,
+        title: '',
+        posterPath: '',
+        backdropPath: '',
+        overview: '',
+        releaseDate: '',
+      };
+
+      return {
+        ...movieState,
+        movieDetail: movieDetail,
       };
     }
     default: {

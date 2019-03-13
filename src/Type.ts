@@ -10,6 +10,7 @@ export type Movie = {
   backdropPath: string;
   overview: string;
   releaseDate: string;
+  runtime?: number;
   budget?: number;
   genres?: Array<MovieGenre>;
   revenue?: number;
@@ -18,6 +19,7 @@ export type Movie = {
 
 export type MovieState = {
   nowPlayingMovies: Array<Movie> | [];
+  movieDetail: Movie;
 };
 
 export type State = {
@@ -32,4 +34,15 @@ export type Action =
   | {
       type: 'FETCH_NOW_PLAYING_SUCCESS';
       payload: Array<Movie>;
+    }
+  | {
+      type: 'FETCH_MOVIE_DETAIL_REQUEST';
+      payload: number;
+    }
+  | {
+      type: 'FETCH_MOVIE_DETAIL_SUCCESS';
+      payload: Movie;
+    }
+  | {
+      type: 'RESET_MOVIE_DETAIL';
     };

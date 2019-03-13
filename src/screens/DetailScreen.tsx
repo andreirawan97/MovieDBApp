@@ -2,11 +2,19 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import {NavigationScreenProps, NavigationParams} from 'react-navigation';
+import {connect} from 'react-redux';
+import {AntDesign} from '@expo/vector-icons';
 
 import {SECONDARY_COLOR} from '../constants/color';
 import {DEVICE_WIDTH} from '../constants/deviceConfig';
+import {State, Action, Movie} from '../Type';
+import BlockQuotes from '../components/BlockQuotes';
 
-type Props = NavigationScreenProps & {};
+type Props = NavigationScreenProps & {
+  movieDetail: Movie;
+  fetchMovieDetail: (movieID: number) => void;
+  resetMovieDetail: () => void;
+};
 
 // create a component
 class DetailScreen extends Component<Props> {
@@ -25,24 +33,58 @@ class DetailScreen extends Component<Props> {
     };
   };
 
+  componentDidMount() {
+    let {navigation, fetchMovieDetail} = this.props;
+    let movieID = navigation.getParam('id');
+
+    fetchMovieDetail(movieID);
+  }
+
+  componentWillUnmount() {
+    let {resetMovieDetail} = this.props;
+
+    resetMovieDetail();
+  }
+
   render() {
-    let {navigation} = this.props;
+    let {navigation, movieDetail} = this.props;
+    let {
+      id,
+      title,
+      posterPath,
+      backdropPath,
+      overview,
+      releaseDate,
+      runtime,
+      budget,
+      genres,
+      revenue,
+      popularity,
+    } = movieDetail;
 
     return (
       <View style={styles.container}>
         <ScrollView>
           <Image
             source={{
-              uri: `http://image.tmdb.org/t/p/original/${navigation.getParam(
-                'backdropPath',
-              )}`,
+              uri: `http://image.tmdb.org/t/p/original/${
+                movieDetail.backdropPath
+              }`,
             }}
             style={styles.headerImage}
           />
 
           <View style={styles.movieDetailContainer}>
             <Text style={styles.textHeader}>Movie Detail</Text>
-            <Text style={styles.textTitle}>Captain Marvel</Text>
+            <Text style={styles.textTitle}>
+              {title ? title : 'No title found!'}
+            </Text>
+            <Text style={styles.textNormal}>
+              <AntDesign name="clockcircleo" size={17} />
+              {runtime ? ` ${runtime} minutes` : ' No runtime found!'}
+            </Text>
+
+            <BlockQuotes text={overview} defaultText="Description not found" />
           </View>
         </ScrollView>
       </View>
@@ -72,9 +114,37 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontSize: 21,
+    marginTop: 15,
+    fontWeight: 'bold',
+  },
+  textNormal: {
+    fontSize: 18,
     marginTop: 10,
   },
 });
 
+function mapStateToProps(state: State) {
+  let {movieState} = state;
+  let {movieDetail} = movieState;
+
+  return {
+    movieDetail: movieDetail,
+  };
+}
+
+function mapDispatchToProps(dispatch: ({}: Action) => void) {
+  return {
+    fetchMovieDetail: (movieID: number) => {
+      dispatch({type: 'FETCH_MOVIE_DETAIL_REQUEST', payload: movieID});
+    },
+    resetMovieDetail: () => {
+      dispatch({type: 'RESET_MOVIE_DETAIL'});
+    },
+  };
+}
+
 //make this component available to the app
-export default DetailScreen;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(DetailScreen);
