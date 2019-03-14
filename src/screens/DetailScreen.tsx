@@ -1,26 +1,31 @@
 //import liraries
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {NavigationScreenProps, NavigationParams} from 'react-navigation';
 import {connect} from 'react-redux';
-import {AntDesign} from '@expo/vector-icons';
+//@ts-ignore
+import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 
 import {SECONDARY_COLOR} from '../constants/color';
 import {DEVICE_WIDTH} from '../constants/deviceConfig';
 import {State, Action, Movie} from '../Type';
-import BlockQuotes from '../components/BlockQuotes';
+import TabDetailMovie from './tabs/TabMovieDetail';
+import TabTrailerMovie from './tabs/TabMovieTrailer';
+import TabLoading from './tabs/TabLoading';
+import {requestMovieTrailer} from '../API';
 
 type Props = NavigationScreenProps & {
   movieDetail: Movie;
   fetchMovieDetail: (movieID: number) => void;
   resetMovieDetail: () => void;
+  resetMovieTrailer: () => void;
 };
 
 // create a component
 class DetailScreen extends Component<Props> {
-  static navigationOptions = (navigation: NavigationParams) => {
+  static navigationOptions = ({navigation}: NavigationParams) => {
     return {
-      title: 'Detail',
+      title: navigation.getParam('title'),
       headerTitleStyle: {
         color: 'white',
       },
@@ -41,52 +46,54 @@ class DetailScreen extends Component<Props> {
   }
 
   componentWillUnmount() {
-    let {resetMovieDetail} = this.props;
+    let {resetMovieDetail, resetMovieTrailer} = this.props;
 
     resetMovieDetail();
+    resetMovieTrailer();
   }
 
+  state = {
+    index: 0,
+    routes: [
+      {key: 'first', title: 'Detail'},
+      {key: 'second', title: 'Trailer'},
+    ],
+  };
+
   render() {
-    let {navigation, movieDetail} = this.props;
-    let {
-      id,
-      title,
-      posterPath,
-      backdropPath,
-      overview,
-      releaseDate,
-      runtime,
-      budget,
-      genres,
-      revenue,
-      popularity,
-    } = movieDetail;
+    let {movieDetail} = this.props;
+
+    let firstScene = () =>
+      movieDetail.id !== 0 ? (
+        <TabDetailMovie movieDetail={movieDetail} />
+      ) : (
+        <TabLoading />
+      );
+    let secondScene = () =>
+      movieDetail.id !== 0 ? (
+        <TabTrailerMovie movieID={movieDetail.id} />
+      ) : (
+        <TabLoading />
+      );
 
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <Image
-            source={{
-              uri: `http://image.tmdb.org/t/p/original/${
-                movieDetail.backdropPath
-              }`,
-            }}
-            style={styles.headerImage}
-          />
-
-          <View style={styles.movieDetailContainer}>
-            <Text style={styles.textHeader}>Movie Detail</Text>
-            <Text style={styles.textTitle}>
-              {title ? title : 'No title found!'}
-            </Text>
-            <Text style={styles.textNormal}>
-              <AntDesign name="clockcircleo" size={17} />
-              {runtime ? ` ${runtime} minutes` : ' No runtime found!'}
-            </Text>
-
-            <BlockQuotes text={overview} defaultText="Description not found" />
-          </View>
-        </ScrollView>
+        <TabView
+          navigationState={this.state}
+          renderScene={SceneMap({
+            first: firstScene,
+            second: secondScene,
+          })}
+          onIndexChange={(index: number) => this.setState({index})}
+          initialLayout={{width: DEVICE_WIDTH}}
+          renderTabBar={(props: any) => (
+            <TabBar
+              {...props}
+              indicatorStyle={{backgroundColor: 'white'}}
+              style={{backgroundColor: SECONDARY_COLOR}}
+            />
+          )}
+        />
       </View>
     );
   }
@@ -97,29 +104,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'whitesmoke',
-  },
-  headerImage: {
-    width: DEVICE_WIDTH,
-    height: DEVICE_WIDTH / 1.776, //233
-    resizeMode: 'contain',
-  },
-  movieDetailContainer: {
-    flex: 1,
-    paddingHorizontal: 15,
-    paddingTop: 20,
-  },
-  textHeader: {
-    fontSize: 32,
-    fontWeight: 'bold',
-  },
-  textTitle: {
-    fontSize: 21,
-    marginTop: 15,
-    fontWeight: 'bold',
-  },
-  textNormal: {
-    fontSize: 18,
-    marginTop: 10,
   },
 });
 
@@ -139,6 +123,9 @@ function mapDispatchToProps(dispatch: ({}: Action) => void) {
     },
     resetMovieDetail: () => {
       dispatch({type: 'RESET_MOVIE_DETAIL'});
+    },
+    resetMovieTrailer: () => {
+      dispatch({type: 'RESET_MOVIE_TRAILER'});
     },
   };
 }

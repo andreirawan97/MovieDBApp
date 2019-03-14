@@ -11,6 +11,14 @@ export default function newsReducer(movieState: MovieState, action: Action) {
       overview: '',
       releaseDate: '',
     },
+    movieDetailTrailer: {
+      data: [],
+      isLoading: true,
+    },
+    movieSearchResult: {
+      data: [],
+      isLoading: true,
+    },
   };
 
   if (!movieState) {
@@ -47,6 +55,46 @@ export default function newsReducer(movieState: MovieState, action: Action) {
       return {
         ...movieState,
         movieDetail: movieDetail,
+      };
+    }
+    case 'FETCH_MOVIE_TRAILER_SUCCESS': {
+      let movieDetailTrailer = action.payload;
+
+      return {
+        ...movieState,
+        movieDetailTrailer: {
+          data: movieDetailTrailer,
+          isLoading: false,
+        },
+      };
+    }
+    case 'RESET_MOVIE_TRAILER': {
+      return {
+        ...movieState,
+        movieDetailTrailer: {
+          data: [],
+          isLoading: true,
+        },
+      };
+    }
+    case 'FETCH_SEARCH_RESULT_SUCCESS': {
+      let searchResult = action.payload;
+
+      return {
+        ...movieState,
+        movieSearchResult: {
+          data: searchResult,
+          isLoading: false,
+        },
+      };
+    }
+    case 'RESET_SEARCH_RESULT': {
+      return {
+        ...movieState,
+        movieSearchResult: {
+          data: [],
+          isLoading: true,
+        },
       };
     }
     default: {

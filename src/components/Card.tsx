@@ -3,11 +3,12 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
   Animated,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
+import {Image} from 'react-native-elements';
 
 import parseDate from '../helper/parseDate';
 
@@ -66,6 +67,7 @@ class Card extends Component<Props> {
             <Image
               source={{uri: `http://image.tmdb.org/t/p/w500/${posterPath}`}}
               style={styles.poster}
+              PlaceholderContent={<ActivityIndicator />}
             />
           </View>
           <View style={styles.textDetailContainer}>
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     elevation: 1,
     borderWidth: 0.5,
-    borderColor: 'grey',
+    borderColor: 'silver',
     marginVertical: 5,
     paddingRight: 8,
     height: 150,

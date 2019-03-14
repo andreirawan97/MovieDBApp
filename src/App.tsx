@@ -4,7 +4,7 @@ import {
   createStackNavigator,
   createAppContainer,
 } from 'react-navigation';
-import {Ionicons} from '@expo/vector-icons';
+import {MaterialIcons} from '@expo/vector-icons';
 import {StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 import {Root} from 'native-base';
@@ -13,21 +13,30 @@ import createDataStore from './configs/createDataStore';
 import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
 import DetailScreen from './screens/DetailScreen';
+import SearchResultScreen from './screens/SearchResultScreen';
+import NowPlayingScreen from './screens/NowPlayingScreen';
 
 const store = createDataStore();
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-  Detail: DetailScreen,
 });
 
 const SearchStack = createStackNavigator({
   Search: SearchScreen,
+  SearchResult: SearchResultScreen,
+  Detail: DetailScreen,
+});
+
+const NowPlayingStack = createStackNavigator({
+  NowPlaying: NowPlayingScreen,
+  Detail: DetailScreen,
 });
 
 const TabNavigator = createBottomTabNavigator(
   {
     Home: HomeStack,
+    NowPlaying: NowPlayingStack,
     Search: SearchStack,
   },
   {
@@ -35,17 +44,17 @@ const TabNavigator = createBottomTabNavigator(
       // @ts-ignore
       tabBarIcon: ({focused, horizontal, tintColor}) => {
         const {routeName} = navigation.state;
-        let IconComponent = Ionicons;
+        let IconComponent = MaterialIcons;
         let iconName;
         if (routeName === 'Home') {
-          iconName = `md-home`;
+          iconName = `home`;
           // Sometimes we want to add badges to some icons.
           // You can check the implementation below.
           // IconComponent = HomeIconWithBadge;
+        } else if (routeName === 'NowPlaying') {
+          iconName = `movie`;
         } else if (routeName === 'Search') {
-          iconName = `ios-search`;
-        } else if (routeName === 'About') {
-          iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+          iconName = `search`;
         }
 
         // You can return any component that you like here!
@@ -54,7 +63,7 @@ const TabNavigator = createBottomTabNavigator(
       },
     }),
     tabBarOptions: {
-      activeTintColor: '#FF9800',
+      activeTintColor: '#2CC7C7',
       inactiveTintColor: 'gray',
     },
   },
